@@ -35,7 +35,7 @@ class PagesMixin(ConfluenceClient):
         """
         try:
             page = self.confluence.get_page_by_id(
-                page_id=page_id, expand="body.storage,version,space,children.attachment"
+                page_id=page_id, expand="body.storage,version,space,children.attachment,extensions.inlineProperties"
             )
             space_key = page.get("space", {}).get("key", "")
             content = page["body"]["storage"]["value"]
