@@ -226,6 +226,37 @@ async def get_page(
 
     return json.dumps(result, indent=2, ensure_ascii=False)
 
+@confluence_mcp.tool(tags={"confluence", "read"})
+async def get_inline_comments(
+    ctx: Context,
+    page_id: Annotated[
+        str,
+        Field(description="The ID of the page whose inline comments you want."),
+    ],
+    return_markdown: Annotated[
+        bool,
+        Field(
+            description=(
+                "When true, comment bodies are returned in Markdown format "
+                "(recommended). If false → original HTML is returned."
+            ),
+            default=True,
+        ),
+    ] = True,
+) -> str:
+    """
+    Fetch all *inline* comments for a Confluence page (Cloud REST v2).
+
+    Returns
+    -------
+    JSON string containing a list of simplified comment dicts.
+    """
+    confluence_fetcher = await get_confluence_fetcher(ctx)
+    comments = confluence_fetcher.get_inline_comments(
+        page_id=page_id, return_markdown=return_markdown
+    )
+    simplified = [c.to_simplified_dict() for c in comments]
+    return json.dumps(simplified, indent=2, ensure_ascii=False)
 
 @confluence_mcp.tool(tags={"confluence", "read"})
 async def get_page_children(
